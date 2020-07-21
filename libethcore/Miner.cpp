@@ -25,6 +25,11 @@ namespace eth
 unsigned Miner::s_dagLoadMode = 0;
 unsigned Miner::s_dagLoadIndex = 0;
 unsigned Miner::s_minersCount = 0;
+unsigned dev::eth::Miner::s_dagCreateDevice = 0;
+
+uint8_t* dev::eth::Miner::s_dagInHostMemory = NULL;
+
+bool dev::eth::Miner::s_exit = false;
 
 FarmFace* FarmFace::m_this = nullptr;
 
@@ -38,7 +43,7 @@ void Miner::setWork(WorkPackage const& _work)
     {
 
         boost::mutex::scoped_lock l(x_work);
-
+        workSwitchStart = std::chrono::high_resolution_clock::now();
         // Void work if this miner is paused
         if (paused())
             m_work.header = h256();

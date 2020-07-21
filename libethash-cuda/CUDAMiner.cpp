@@ -19,7 +19,7 @@ along with ethminer.  If not, see <http://www.gnu.org/licenses/>.
 #include <ethash/ethash.hpp>
 
 #include "CUDAMiner.h"
-
+#include <libprogpow-cuda/ProgPowCUDAMiner.h>
 using namespace std;
 using namespace dev;
 using namespace eth;
@@ -38,6 +38,22 @@ CUDAMiner::CUDAMiner(unsigned _index, CUSettings _settings, DeviceDescriptor& _d
     m_streams_batch_size(_settings.gridSize * _settings.blockSize * _settings.streams)
 {
     m_deviceDescriptor = _device;
+}
+
+
+Miner* CUMinerFactory::GetCUMinerIntance(unsigned int _index, PowType _powType, CUSettings _settings, DeviceDescriptor &_device) {
+        Miner* miner = nullptr;
+        if (_powType == PowType::Ethash)
+        {
+            miner = new CUDAMiner(_index, _settings, _device);
+        }else if (_powType == PowType::ProgPOW)
+        {
+            miner = new ProgPowCUDAMiner(_index, _settings, _device);
+        }else
+        {
+            cudalog << "Unrecognized Pow Type";
+        }
+        return miner;
 }
 
 CUDAMiner::~CUDAMiner()

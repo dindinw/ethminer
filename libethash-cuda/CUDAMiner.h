@@ -29,6 +29,13 @@ namespace dev
 {
 namespace eth
 {
+
+class CUMinerFactory
+{
+    public:
+        Miner* GetCUMinerIntance(unsigned _index, PowType _powType, CUSettings _settings, DeviceDescriptor& _device);
+};
+
 class CUDAMiner : public Miner
 {
 public:
@@ -47,6 +54,10 @@ protected:
     bool initEpoch_internal() override;
 
     void kick_miner() override;
+    CUSettings m_settings;
+
+    const uint32_t m_batch_size;
+    const uint32_t m_streams_batch_size;
 
 private:
     atomic<bool> m_new_work = {false};
@@ -56,11 +67,6 @@ private:
     std::vector<volatile Search_results*> m_search_buf;
     std::vector<cudaStream_t> m_streams;
     uint64_t m_current_target = 0;
-
-    CUSettings m_settings;
-
-    const uint32_t m_batch_size;
-    const uint32_t m_streams_batch_size;
 
     uint64_t m_allocated_memory_dag = 0; // dag_size is a uint64_t in EpochContext struct
     size_t m_allocated_memory_light_cache = 0;

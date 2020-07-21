@@ -95,6 +95,13 @@ enum class SolutionAccountingEnum
     Failed
 };
 
+enum class HwMonitorIndexSource
+{
+	UNKNOWN,
+	OPENCL,
+	CUDA
+};
+
 struct MinerSettings
 {
     vector<unsigned> devices;
@@ -224,6 +231,7 @@ struct DeviceDescriptor
 struct HwMonitorInfo
 {
     HwMonitorInfoType deviceType = HwMonitorInfoType::UNKNOWN;
+	HwMonitorIndexSource indexSource = HwMonitorIndexSource::UNKNOWN;
     string devicePciId;
     int deviceIndex = -1;
 };
@@ -438,6 +446,7 @@ public:
     float RetrieveHashRate() noexcept;
 
     void TriggerHashRateUpdate() noexcept;
+    std::chrono::high_resolution_clock::time_point workSwitchStart;
 
 protected:
     /**
@@ -466,6 +475,9 @@ protected:
     static unsigned s_dagLoadMode;   // Way dag should be loaded
     static unsigned s_dagLoadIndex;  // In case of serialized load of dag this is the index of miner
                                      // which should load next
+    static unsigned s_dagCreateDevice;
+	static uint8_t* s_dagInHostMemory;
+	static bool s_exit;
 
     const unsigned m_index = 0;           // Ordinal index of the Instance (not the device)
     DeviceDescriptor m_deviceDescriptor;  // Info about the device
